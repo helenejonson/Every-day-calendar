@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,7 +45,19 @@ public class MainActivity extends AppCompatActivity {
     public void cal(View view){
         Intent i = new Intent("com.example.everyday.CalendarActivity");
         i.putExtra("date", disp.toString());
-        startActivity(i);
+        startActivityForResult(i, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            TextView res = findViewById(R.id.date);
+            String date = data.getExtras().getString("date");
+            disp = LocalDate.parse(date);
+            valid();
+            res.setText(form.format(disp));
+        }
     }
 
     public void resetFile(){
@@ -83,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     public void valid(){
         int l = readFromFile.size();
         TextView btn = findViewById(R.id.did);
+        btn.setBackgroundColor(Color.LTGRAY);
         if(disp.isAfter(now)){
             btn.setEnabled(false);
         }else{
@@ -90,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < readFromFile.size(); i++){
                 if(readFromFile.get(i).equals(disp.toString())){
                     btn.setEnabled(false);
+                    btn.setBackgroundColor(Color.parseColor("#B5F49E"));
                     break;
                 }
             }
@@ -107,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
     public void did(View view){
         TextView btn = findViewById(R.id.did);
         btn.setEnabled(false);
+        btn.setBackgroundColor(Color.parseColor("#B5F49E"));
         File dir = getFilesDir();
         File file = new File(dir, "myDates.txt");
         PrintWriter writer = null;
