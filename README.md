@@ -1,2 +1,2 @@
 # Every-day-calendar
-An App to keep track of a daily task
+Inspired by Simone Giertz’s every day calendar, this is an app where you can keep track of a task you want to do daily, weekly...
