@@ -12,7 +12,6 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -28,15 +27,17 @@ public class MainActivity extends AppCompatActivity {
     private DateTimeFormatter form = DateTimeFormatter.ofPattern("E MMM dd yyyy");
     private ArrayList<String> readFromFile = new ArrayList<>();
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         TextView res = findViewById(R.id.date);
         res.setText(form.format(now));
-        //File file = new File(getFilesDir(), "myDates.txt"); //Creation of file
+        File dir = getFilesDir();
+        File file = new File(dir, "myDates.txt");
+        if(!file.exists()){
+            //File file = new File(getFilesDir(), "myDates.txt"); //Creation of file
+        }
         //resetFile(); // Resets file with no dates
         readFromFile();
         valid();
@@ -67,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             writer = new PrintWriter(file);
             writer.print("");
-
         } catch (Exception e){
             Log.d("WRITER", e.toString());
         } finally {
@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
         disp = prev;
         valid();
         res.setText(form.format(prev));
-
     }
 
     public void next(View view){
@@ -90,11 +89,9 @@ public class MainActivity extends AppCompatActivity {
         valid();
         TextView res = findViewById(R.id.date);
         res.setText(form.format(next));
-
     }
 
     public void valid(){
-        int l = readFromFile.size();
         TextView btn = findViewById(R.id.did);
         btn.setBackgroundColor(Color.LTGRAY);
         if(disp.isAfter(now)){
@@ -102,14 +99,13 @@ public class MainActivity extends AppCompatActivity {
         }else{
             btn.setEnabled(true);
             for(int i = 0; i < readFromFile.size(); i++){
-                if(readFromFile.get(i).equals(disp.toString())){
+                if(readFromFile.contains(disp.toString())){
                     btn.setEnabled(false);
                     btn.setBackgroundColor(Color.parseColor("#B5F49E"));
                     break;
                 }
             }
         }
-
     }
 
     public void reset(View view){
@@ -129,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             writer = new PrintWriter(new FileWriter(file, true));
             writer.println(disp);
-
         } catch (Exception e){
             Log.d("WRITER", e.toString());
         } finally {
@@ -144,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(dir, "myDates.txt");
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
-        ArrayList<String> fromFile = new ArrayList<>();
         try {
             fileReader = new FileReader(file);
             bufferedReader = new BufferedReader(fileReader);

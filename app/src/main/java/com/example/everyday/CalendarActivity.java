@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.CalendarView;
 import android.widget.TextView;
-
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.*;
 import java.util.ArrayList;
 
@@ -24,6 +24,7 @@ public class CalendarActivity extends AppCompatActivity {
     private int monthLength = 0;
     private String month = "";
     private int year = 0;
+    private ArrayList<String> readFromFile = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +32,8 @@ public class CalendarActivity extends AppCompatActivity {
         setContentView(R.layout.activity_calendar);
         String date = getIntent().getStringExtra("date");
         disp = LocalDate.parse(date);
-        // Set days of months
-
-        int dispDay = disp.getDayOfWeek().getValue();
-        int dispDays = disp.lengthOfMonth();
-
-        //Set days of month in calendar
         findMonthData();
-
-
-
+        readFromFile();
         monthList= new TextView[][]{
                 {findViewById(R.id.b11), findViewById(R.id.b12), findViewById(R.id.b13), findViewById(R.id.b14), findViewById(R.id.b15), findViewById(R.id.b16), findViewById(R.id.b17)},
                 {findViewById(R.id.b21), findViewById(R.id.b22), findViewById(R.id.b23), findViewById(R.id.b24), findViewById(R.id.b25), findViewById(R.id.b26), findViewById(R.id.b27)},
@@ -74,6 +67,18 @@ public class CalendarActivity extends AppCompatActivity {
                     if(now.getMonth() == disp.getMonth() && now.getDayOfMonth() == dates){
                         monthList[i][j].setTextColor(Color.RED);
                     }
+                    String mon = Integer.toString(disp.getMonthValue());
+                    if(disp.getMonthValue() < 10){
+                        mon = 0 + mon;
+                    }
+                    String day = Integer.toString(dates);
+                    if(dates < 10){
+                        day = 0 + day;
+                    }
+                    String selected = year + "-" + mon + "-"+ day;
+                    if(readFromFile.contains(selected)){
+                        monthList[i][j].setBackgroundColor(Color.parseColor("#B5F49E"));
+                    }
                 }else{
                     monthList[i][j].setText("");
                     monthList[i][j].setEnabled(false);
@@ -81,6 +86,7 @@ public class CalendarActivity extends AppCompatActivity {
 
             }
         }
+
     }
 
     public void prevCal(View view){
@@ -118,5 +124,30 @@ public class CalendarActivity extends AppCompatActivity {
         setResult(RESULT_OK, i);
         CalendarActivity.this.finish();
 
+    }
+
+    public void readFromFile(){
+        File dir = getFilesDir();
+        File file = new File(dir, "myDates.txt");
+        FileReader fileReader = null;
+        BufferedReader bufferedReader = null;
+        try {
+            fileReader = new FileReader(file);
+            bufferedReader = new BufferedReader(fileReader);
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                readFromFile.add(line);
+                line = bufferedReader.readLine();
+            }
+        } catch (Exception e) {
+            Log.d("READ", e.toString());
+        } finally {
+            try {
+                if (bufferedReader != null) bufferedReader.close();
+                if (fileReader != null) fileReader.close();
+            } catch (Exception e) {
+                Log.d("READ", "Error while closing bufferreader and filereader.");
+            }
+        }
     }
 }
