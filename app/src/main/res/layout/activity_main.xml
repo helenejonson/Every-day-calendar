@@ -11,7 +11,7 @@
         android:layout_width="149dp"
         android:layout_height="156dp"
         android:onClick="did"
-        android:text="I did it"
+        android:text="@string/done"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -141,7 +141,13 @@ public class CalendarActivity extends AppCompatActivity {
         i.putExtra("date", selected);
         setResult(RESULT_OK, i);
         CalendarActivity.this.finish();
+    }
 
+    public void back(View view){
+        Intent i = new Intent();
+        i.putExtra("date", disp.toString());
+        setResult(RESULT_OK, i);
+        CalendarActivity.this.finish();
     }
 
     public void readFromFile(){
