@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.RequiresApi;
@@ -34,6 +36,7 @@ public class CalendarActivity extends AppCompatActivity {
         disp = LocalDate.parse(date);
         findMonthData();
         readFromFile();
+        ArrayList<String> n = readFromFile;
         monthList= new TextView[][]{
                 {findViewById(R.id.b11), findViewById(R.id.b12), findViewById(R.id.b13), findViewById(R.id.b14), findViewById(R.id.b15), findViewById(R.id.b16), findViewById(R.id.b17)},
                 {findViewById(R.id.b21), findViewById(R.id.b22), findViewById(R.id.b23), findViewById(R.id.b24), findViewById(R.id.b25), findViewById(R.id.b26), findViewById(R.id.b27)},
@@ -43,6 +46,21 @@ public class CalendarActivity extends AppCompatActivity {
                 {findViewById(R.id.b61), findViewById(R.id.b62), findViewById(R.id.b63), findViewById(R.id.b64), findViewById(R.id.b65), findViewById(R.id.b66), findViewById(R.id.b67)}
         };
         setMonthData();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.setting){
+            Intent intent = new Intent("com.example.everyday.SettingsActivity");
+            startActivityForResult(intent, 2);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void findMonthData(){

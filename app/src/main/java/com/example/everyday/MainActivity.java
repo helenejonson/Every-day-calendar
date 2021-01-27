@@ -17,6 +17,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -38,9 +40,23 @@ public class MainActivity extends AppCompatActivity {
         if(!file.exists()){
             //File file = new File(getFilesDir(), "myDates.txt"); //Creation of file
         }
-        //resetFile(); // Resets file with no dates
         readFromFile();
         valid();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.setting){
+            Intent intent = new Intent("com.example.everyday.SettingsActivity");
+            startActivityForResult(intent, 2);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void cal(View view){
@@ -58,20 +74,13 @@ public class MainActivity extends AppCompatActivity {
             disp = LocalDate.parse(date);
             valid();
             res.setText(form.format(disp));
-        }
-    }
-
-    public void resetFile(){
-        File dir = getFilesDir();
-        File file = new File(dir, "myDates.txt");
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(file);
-            writer.print("");
-        } catch (Exception e){
-            Log.d("WRITER", e.toString());
-        } finally {
-            writer.close();
+        }else if(requestCode == 2 && resultCode == RESULT_OK){
+            readFromFile = new ArrayList<>();
+            readFromFile();
+            ArrayList<String> n = readFromFile;
+            TextView res = findViewById(R.id.date);
+            valid();
+            res.setText(form.format(disp));
         }
     }
 
