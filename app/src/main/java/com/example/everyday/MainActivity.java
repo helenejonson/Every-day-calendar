@@ -28,18 +28,18 @@ public class MainActivity extends AppCompatActivity {
     private LocalDate disp = LocalDate.now();
     private DateTimeFormatter form = DateTimeFormatter.ofPattern("E MMM dd yyyy");
     private ArrayList<String> readFromFile = new ArrayList<>();
+    private TextView res = null;
+    private File dir = null;
+    private File file = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView res = findViewById(R.id.date);
+        res = findViewById(R.id.date);
         res.setText(form.format(now));
-        File dir = getFilesDir();
-        File file = new File(dir, "myDates.txt");
-        if(!file.exists()){
-            //File file = new File(getFilesDir(), "myDates.txt"); //Creation of file
-        }
+        dir = getFilesDir();
+        file = new File(dir, "myDates.txt");
         readFromFile();
         valid();
     }
@@ -59,6 +59,36 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void resetDay(View view){
+        for(int i = 0; i < readFromFile.size();i++){
+            if(disp.toString().equals(readFromFile.get(i))){
+                readFromFile.remove(i);
+                break;
+            }
+        }
+        File file = new File(dir, "myDates.txt");
+        PrintWriter writer = null;
+        try {
+            for(int i = 0; i <= readFromFile.size(); i++){
+                if(i == 0){
+                    writer = new PrintWriter(file);
+                }else{
+                    writer = new PrintWriter(new FileWriter(file, true));
+                }
+                writer.println(readFromFile.get(i));
+            }
+        } catch (Exception e){
+            Log.d("WRITER", e.toString());
+        } finally {
+            assert writer != null;
+            writer.close();
+        }
+        readFromFile = new ArrayList<>();
+        readFromFile();
+        valid();
+        res.setText(form.format(disp));
+    }
+
     public void cal(View view){
         Intent i = new Intent("com.example.everyday.CalendarActivity");
         i.putExtra("date", disp.toString());
@@ -69,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            TextView res = findViewById(R.id.date);
             String date = data.getExtras().getString("date");
             disp = LocalDate.parse(date);
             valid();
@@ -77,15 +106,12 @@ public class MainActivity extends AppCompatActivity {
         }else if(requestCode == 2 && resultCode == RESULT_OK){
             readFromFile = new ArrayList<>();
             readFromFile();
-            ArrayList<String> n = readFromFile;
-            TextView res = findViewById(R.id.date);
             valid();
             res.setText(form.format(disp));
         }
     }
 
     public void prev(View view){
-        TextView res = findViewById(R.id.date);
         LocalDate prev = disp.minus(1, ChronoUnit.DAYS);
         disp = prev;
         valid();
@@ -96,20 +122,23 @@ public class MainActivity extends AppCompatActivity {
         LocalDate next = disp.plus(1, ChronoUnit.DAYS);
         disp = next;
         valid();
-        TextView res = findViewById(R.id.date);
         res.setText(form.format(next));
     }
 
     public void valid(){
         TextView btn = findViewById(R.id.did);
+        TextView resetbtn = findViewById(R.id.resetDay);
         btn.setBackgroundColor(Color.LTGRAY);
+        resetbtn.setEnabled(false);
         if(disp.isAfter(now)){
             btn.setEnabled(false);
         }else{
             btn.setEnabled(true);
+            resetbtn.setEnabled(false);
             for(int i = 0; i < readFromFile.size(); i++){
                 if(readFromFile.contains(disp.toString())){
                     btn.setEnabled(false);
+                    resetbtn.setEnabled(true);
                     btn.setBackgroundColor(Color.parseColor("#B5F49E"));
                     break;
                 }
@@ -120,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
     public void reset(View view){
         disp = now;
         valid();
-        TextView res = findViewById(R.id.date);
         res.setText(form.format(now));
     }
 
     public void did(View view){
         TextView btn = findViewById(R.id.did);
         btn.setEnabled(false);
+        TextView resetbtn = findViewById(R.id.resetDay);
+        resetbtn.setEnabled(true);
         btn.setBackgroundColor(Color.parseColor("#B5F49E"));
-        File dir = getFilesDir();
         File file = new File(dir, "myDates.txt");
         PrintWriter writer = null;
         try {
@@ -140,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
             writer.close();
         }
         readFromFile();
-
     }
 
     public void readFromFile(){

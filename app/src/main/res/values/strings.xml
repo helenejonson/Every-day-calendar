@@ -4,6 +4,7 @@
     <string name="back">Back</string>
     <string name="done">I did it!</string>
     <string name="reset">Reset</string>
+    <string name="resetFile">Reset App</string>
     <string name="resetTitle">Are you sure you want to reset your file?</string>
     <string name="resetDesc">Doing this removes all data forever</string>
 </resources>
