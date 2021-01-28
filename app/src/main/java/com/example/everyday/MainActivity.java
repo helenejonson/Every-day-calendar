@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
             valid();
             res.setText(form.format(disp));
         }else if(requestCode == 2 && resultCode == RESULT_OK){
+            disp = now;
             readFromFile = new ArrayList<>();
             readFromFile();
             valid();
